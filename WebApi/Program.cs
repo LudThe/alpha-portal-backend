@@ -1,23 +1,37 @@
+using Business.Services;
+using Data.Contexts;
+using Data.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddDbContext<DataContext>(x =>
+    x.UseLazyLoadingProxies()
+    .UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
+
+builder.Services.AddScoped<ClientRepository>();
+builder.Services.AddScoped<ClientService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+builder.Services.AddCors(x =>
 {
-    app.MapOpenApi();
-}
+    x.AddPolicy("AllowAll", x =>
+    {
+        x.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
 
+app.MapOpenApi();
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+app.UseCors("AllowAll");
 
 app.Run();
