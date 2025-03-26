@@ -13,6 +13,12 @@ builder.Services.AddScoped<ClientRepository>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<ClientInformationRepository>();
 builder.Services.AddScoped<ClientAddressRepository>();
+builder.Services.AddScoped<MemberRepository>();
+builder.Services.AddScoped<MemberService>();
+builder.Services.AddScoped<MemberRoleRepository>();
+builder.Services.AddScoped<MemberRoleService>();
+builder.Services.AddScoped<MemberInformationRepository>();
+builder.Services.AddScoped<MemberAddressRepository>();
 
 
 builder.Services.AddCors(x =>
