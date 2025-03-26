@@ -11,12 +11,9 @@ builder.Services.AddDbContext<DataContext>(x =>
 
 builder.Services.AddScoped<ClientRepository>();
 builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<ClientInformationRepository>();
+builder.Services.AddScoped<ClientAddressRepository>();
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-
-
-var app = builder.Build();
 
 builder.Services.AddCors(x =>
 {
@@ -28,10 +25,22 @@ builder.Services.AddCors(x =>
     });
 });
 
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
+
+
+var app = builder.Build();
+app.UseCors("AllowAll");
 app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI(x =>
+{
+    x.SwaggerEndpoint("/swagger/v1/swagger.json", "Alpha API");
+    x.RoutePrefix = string.Empty;
+});
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors("AllowAll");
 
 app.Run();
