@@ -42,6 +42,8 @@ public class ClientFactory
     {
         if (form == null) return null;
 
+        DateTime dateTime = DateTime.Now;
+
         var contact = new ClientInformationEntity
         {
             Email = form.Email,
@@ -59,8 +61,8 @@ public class ClientFactory
         var client = new ClientEntity
         {
             ClientName = form.ClientName,
-            Created = DateTime.UtcNow,
-            Modified = DateTime.UtcNow,
+            Created = dateTime,
+            Modified = dateTime,
             IsActive = true,
             ContactInformation = contact,
             Address = address,

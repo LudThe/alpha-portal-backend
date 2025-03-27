@@ -22,11 +22,7 @@ public class MemberFactory
             City = entity.Address.City
         };
 
-        var role = new MemberRole
-        {
-            Id = entity.MemberRole.Id,
-            MemberRoleName = entity.MemberRole.MemberRoleName
-        };
+        var role = MemberRoleFactory.Map(entity.MemberRole);
 
         var member = new Member
         {
@@ -38,7 +34,7 @@ public class MemberFactory
             Modified = entity.Modified,
             MemberInformation = contact,
             MemberAddress = address,
-            MemberRole = role
+            MemberRole = role!
         };
 
         return member;
@@ -48,6 +44,8 @@ public class MemberFactory
     public static MemberEntity? Create(MemberRegistrationForm form)
     {
         if (form == null) return null;
+
+        DateTime dateTime = DateTime.Now;
 
         var contact = new MemberInformationEntity
         {
@@ -67,8 +65,8 @@ public class MemberFactory
             FirstName = form.FirstName,
             LastName = form.LastName,
             JobTitle = form.JobTitle,
-            Created = DateTime.UtcNow,
-            Modified = DateTime.UtcNow,
+            Created = dateTime,
+            Modified = dateTime,
             ContactInformation = contact,
             Address = address,
             MemberRoleId = form.MemberRoleId,

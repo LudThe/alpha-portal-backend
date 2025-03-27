@@ -75,7 +75,7 @@ public class MemberService(MemberRepository memberRepository, MemberInformationR
         try
         {
             var updatedMemberEntity = MemberFactory.Update(memberEntity, form);
-            var result = await _memberRepository.UpdateAsync(memberEntity);
+            var result = await _memberRepository.UpdateAsync(updatedMemberEntity!);
             if (!result)
                 return ServiceResult.Failed();
 

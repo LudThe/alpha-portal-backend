@@ -75,7 +75,7 @@ public class ClientService(ClientRepository clientRepository, ClientInformationR
         try
         {
             var updatedClientEntity = ClientFactory.Update(clientEntity, form);
-            var result = await _clientRepository.UpdateAsync(clientEntity);
+            var result = await _clientRepository.UpdateAsync(updatedClientEntity!);
             if (!result)
                 return ServiceResult.Failed();
 
