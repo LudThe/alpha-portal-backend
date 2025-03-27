@@ -12,4 +12,6 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public virtual DbSet<MemberInformationEntity> MemberInformation { get; set; }
     public virtual DbSet<MemberAddressEntity> MemberAddresses { get; set; }
     public virtual DbSet<MemberRoleEntity> MemberRoles { get; set; }
+    public virtual DbSet<ProjectEntity> Projects { get; set; }
+    public virtual DbSet<ProjectStatusEntity> ProjectStatuses { get; set; }
 }

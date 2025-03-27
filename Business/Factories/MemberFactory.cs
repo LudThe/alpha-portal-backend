@@ -87,7 +87,7 @@ public class MemberFactory
         memberEntity.JobTitle = form.JobTitle;
         memberEntity.Modified = DateTime.UtcNow;
 
-        memberEntity.ContactInformation.Email = form.Email;
+        // memberEntity.ContactInformation.Email = form.Email;
         memberEntity.ContactInformation.Phone = form.Phone;
 
         memberEntity.Address.StreetAddress = form.StreetAddress;

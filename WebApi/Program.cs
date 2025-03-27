@@ -9,16 +9,22 @@ builder.Services.AddDbContext<DataContext>(x =>
     x.UseLazyLoadingProxies()
     .UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
 
+
 builder.Services.AddScoped<ClientRepository>();
-builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<ClientInformationRepository>();
 builder.Services.AddScoped<ClientAddressRepository>();
 builder.Services.AddScoped<MemberRepository>();
-builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<MemberRoleRepository>();
-builder.Services.AddScoped<MemberRoleService>();
 builder.Services.AddScoped<MemberInformationRepository>();
 builder.Services.AddScoped<MemberAddressRepository>();
+builder.Services.AddScoped<ProjectRepository>();
+builder.Services.AddScoped<ProjectStatusRepository>();
+
+builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<MemberService>();
+builder.Services.AddScoped<MemberRoleService>();
+builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ProjectStatusService>();
 
 
 builder.Services.AddCors(x =>
