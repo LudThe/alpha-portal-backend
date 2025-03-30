@@ -38,7 +38,7 @@ public class ProjectService(ProjectRepository projectRepository)
 
 
         if (await _projectRepository.ExistsAsync(x => x.ProjectName == form.ProjectName))
-            return ServiceResult.AlreadyExists();
+            return ServiceResult.Conflict();
 
         try
         {

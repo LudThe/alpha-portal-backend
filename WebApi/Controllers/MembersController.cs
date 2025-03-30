@@ -75,6 +75,7 @@ public class MembersController(MemberService memberService) : ControllerBase
         return result.StatusCode switch
         {
             200 => Ok(result),
+            409 => Conflict(result),
             _ => Problem(),
         };
     }

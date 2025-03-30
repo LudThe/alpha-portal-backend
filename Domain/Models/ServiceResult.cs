@@ -18,7 +18,7 @@ public class ServiceResult
     public static ServiceResult NotFound(string? message = "Not found") =>
         new() { Succeeded = false, StatusCode = 404, Message = message };
 
-    public static ServiceResult AlreadyExists(string? message = "Already exists") =>
+    public static ServiceResult Conflict(string? message = "Conflict") =>
         new() { Succeeded = false, StatusCode = 409, Message = message };
 
     public static ServiceResult Failed(string? message = "An unexpected error occured") =>

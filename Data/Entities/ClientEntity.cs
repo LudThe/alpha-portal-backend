@@ -16,4 +16,5 @@ public class ClientEntity
     public virtual ClientInformationEntity ContactInformation { get; set; } = null!;
     public virtual ClientAddressEntity Address { get; set; } = null!;
 
+    public virtual ICollection<ProjectEntity> Projects { get; set; } = [];
 }

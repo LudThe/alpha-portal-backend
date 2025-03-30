@@ -4,12 +4,12 @@ using Domain.Models;
 
 namespace Business.Services;
 
-public class ClientService(ClientRepository clientRepository, ClientInformationRepository clientInformationRepository, ClientAddressRepository clientAddressRepository)
+public class ClientService(ClientRepository clientRepository, ClientInformationRepository clientInformationRepository, ClientAddressRepository clientAddressRepository, ProjectRepository projectRepository)
 {
     private readonly ClientRepository _clientRepository = clientRepository;
     private readonly ClientInformationRepository _clientInformationRepository = clientInformationRepository;
     private readonly ClientAddressRepository _clientAddressRepository = clientAddressRepository;
-
+    private readonly ProjectRepository _projectRepository = projectRepository;
 
     public async Task<IEnumerable<Client>> GetAll()
     {
@@ -41,7 +41,7 @@ public class ClientService(ClientRepository clientRepository, ClientInformationR
 
 
         if (await _clientRepository.ExistsAsync(x => x.ClientName == form.ClientName))
-            return ServiceResult.AlreadyExists();
+            return ServiceResult.Conflict();
 
         try
         {
@@ -100,6 +100,11 @@ public class ClientService(ClientRepository clientRepository, ClientInformationR
 
         try
         {
+            // can't remove if connected to project
+            var hasProjects = await _projectRepository.ExistsAsync(x => x.ClientId == id);
+            if (hasProjects)
+                return ServiceResult.Conflict();
+
             var result = await _clientRepository.RemoveAsync(clientEntity);
             if (!result)
                 return ServiceResult.Failed();

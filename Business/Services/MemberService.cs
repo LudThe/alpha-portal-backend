@@ -4,11 +4,12 @@ using Domain.Models;
 
 namespace Business.Services;
 
-public class MemberService(MemberRepository memberRepository, MemberInformationRepository memberInformationRepository, MemberAddressRepository memberAddressRepository)
+public class MemberService(MemberRepository memberRepository, MemberInformationRepository memberInformationRepository, MemberAddressRepository memberAddressRepository, ProjectRepository projectRepository)
 {
     private readonly MemberRepository _memberRepository = memberRepository;
     private readonly MemberInformationRepository _memberInformationRepository = memberInformationRepository;
     private readonly MemberAddressRepository _memberAddressRepository = memberAddressRepository;
+    private readonly ProjectRepository _projectRepository = projectRepository;
 
 
     public async Task<IEnumerable<Member>> GetAll()
@@ -41,7 +42,7 @@ public class MemberService(MemberRepository memberRepository, MemberInformationR
 
 
         if (await _memberRepository.ExistsAsync(x => x.ContactInformation.Email == form.Email))
-            return ServiceResult.AlreadyExists();
+            return ServiceResult.Conflict();
 
         try
         {
@@ -100,6 +101,11 @@ public class MemberService(MemberRepository memberRepository, MemberInformationR
 
         try
         {
+            // can't remove if connected to project
+            var hasProjects = await _projectRepository.ExistsAsync(x => x.MemberId == id);
+            if (hasProjects)
+                return ServiceResult.Conflict();
+
             var result = await _memberRepository.RemoveAsync(memberEntity);
             if (!result)
                 return ServiceResult.Failed();

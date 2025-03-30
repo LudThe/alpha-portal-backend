@@ -17,4 +17,6 @@ public class MemberEntity
 
     public int MemberRoleId { get; set; }
     public virtual MemberRoleEntity MemberRole { get; set; } = null!;
+
+    public virtual ICollection<ProjectEntity> Projects { get; set; } = [];
 }
