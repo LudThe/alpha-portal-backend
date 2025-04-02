@@ -70,6 +70,8 @@ public class ProjectFactory
         projectEntity.StartDate = form.StartDate;
         projectEntity.EndDate = form.EndDate;
 
+        projectEntity.Modified = DateTime.UtcNow;
+
         projectEntity.ClientId = form.ClientId;
         projectEntity.MemberId = form.MemberId;
         projectEntity.ProjectStatusId = form.ProjectStatusId;

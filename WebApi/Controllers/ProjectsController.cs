@@ -1,4 +1,4 @@
-﻿using Business.Services;
+﻿using Business.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,9 +6,9 @@ namespace WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProjectsController(ProjectService projectService) : ControllerBase
+public class ProjectsController(IProjectService projectService) : ControllerBase
 {
-    private readonly ProjectService _projectService = projectService;
+    private readonly IProjectService _projectService = projectService;
 
 
     [HttpGet]
@@ -59,6 +59,7 @@ public class ProjectsController(ProjectService projectService) : ControllerBase
         {
             200 => Ok(result),
             400 => BadRequest(result),
+            404 => NotFound(result),
             _ => Problem(),
         };
     }
@@ -75,6 +76,7 @@ public class ProjectsController(ProjectService projectService) : ControllerBase
         return result.StatusCode switch
         {
             200 => Ok(result),
+            404 => NotFound(result),
             _ => Problem(),
         };
     }

@@ -1,19 +1,28 @@
 ﻿using Business.Factories;
-using Data.Repositories;
+using Business.Interfaces;
+using Data.Interfaces;
 using Domain.Models;
 
 namespace Business.Services;
 
-public class ProjectStatusService(ProjectStatusRepository projectStatusRepository)
+public class ProjectStatusService(IProjectStatusRepository projectStatusRepository) : IProjectStatusService
 {
-    private readonly ProjectStatusRepository _projectStatusRepository = projectStatusRepository;
+    private readonly IProjectStatusRepository _projectStatusRepository = projectStatusRepository;
 
     public async Task<IEnumerable<ProjectStatus>> GetAll()
     {
-        var list = await _projectStatusRepository.GetAllAsync(
-            selector: x => ProjectStatusFactory.Map(x)!
-        );
+        var entities = await _projectStatusRepository.GetAllAsync(sortBy: x => x.Id);
+        var projectStatuses = entities.Select(ProjectStatusFactory.Map);
 
-        return list.OrderBy(x => x.Id);
+        return projectStatuses!;
+    }
+
+    public async Task<ProjectStatus?> GetByStatusNameAsync(string statusName)
+    {
+        var entity = await _projectStatusRepository.GetAsync(x => x.StatusName == statusName);
+        if (entity == null) return null;
+
+        var projectStatus = ProjectStatusFactory.Map(entity);
+        return projectStatus;
     }
 }

@@ -1,27 +1,48 @@
 ﻿using Business.Factories;
-using Data.Repositories;
+using Business.Interfaces;
+using Data.Interfaces;
 using Domain.Models;
 
 namespace Business.Services;
 
-public class ProjectService(ProjectRepository projectRepository)
+public class ProjectService(IProjectRepository projectRepository, IProjectStatusService projectStatusService) : IProjectService
 {
-    private readonly ProjectRepository _projectRepository = projectRepository;
+    private readonly IProjectRepository _projectRepository = projectRepository;
+    private readonly IProjectStatusService _projectStatusService = projectStatusService;
 
     public async Task<IEnumerable<Project>> GetAll()
     {
-        var list = await _projectRepository.GetAllAsync(
-            selector: x => ProjectFactory.Map(x)!
-        );
+        var entities = await _projectRepository.GetAllAsync(
+                orderByDescending: true,
+                sortBy: x => x.Created,
+                filterBy: null,
+                i => i.Client,
+                i => i.Client.ContactInformation,
+                i => i.Client.Address,
+                i => i.Member,
+                i => i.Member.ContactInformation,
+                i => i.Member.Address,
+                i => i.Member.MemberRole,
+                i => i.ProjectStatus
+            );
+        var projects = entities.Select(ProjectFactory.Map);
 
-        return list.OrderBy(x => x.Id);
+        return projects!;
     }
 
 
     public async Task<Project?> GetById(int id)
     {
         var projectEntity = await _projectRepository.GetAsync(
-                predicate: x => x.Id == id
+                findBy: x => x.Id == id,
+                i => i.Client,
+                i => i.Client.ContactInformation,
+                i => i.Client.Address,
+                i => i.Member,
+                i => i.Member.ContactInformation,
+                i => i.Member.Address,
+                i => i.Member.MemberRole,
+                i => i.ProjectStatus
             );
 
         if (projectEntity == null) return null;
@@ -43,6 +64,13 @@ public class ProjectService(ProjectRepository projectRepository)
         try
         {
             var projectEntity = ProjectFactory.Create(form);
+
+            var projectStatus = _projectStatusService.GetByStatusNameAsync("Active");
+            if (projectStatus.Result != null && projectStatus.Result.Id != 0)
+                projectEntity!.ProjectStatusId = projectStatus.Result.Id;
+            else
+                return ServiceResult.Failed();
+
             var result = await _projectRepository.AddAsync(projectEntity!);
             if (!result)
                 return ServiceResult.Failed();
@@ -62,7 +90,12 @@ public class ProjectService(ProjectRepository projectRepository)
         if (form == null)
             return ServiceResult.BadRequest();
 
-        var projectEntity = await _projectRepository.GetAsync(x => x.Id == id);
+        var projectEntity = await _projectRepository.GetAsync(
+                findBy: x => x.Id == id,
+                i => i.Client,
+                i => i.Member,
+                i => i.ProjectStatus
+            );
 
         if (projectEntity == null) return ServiceResult.NotFound();
 

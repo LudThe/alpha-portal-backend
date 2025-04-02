@@ -1,13 +1,13 @@
-﻿using Business.Services;
+﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProjectStatusesController(ProjectStatusService projectStatusService) : ControllerBase
+public class ProjectStatusesController(IProjectStatusService projectStatusService) : ControllerBase
 {
-    private readonly ProjectStatusService _projectStatusService = projectStatusService;
+    private readonly IProjectStatusService _projectStatusService = projectStatusService;
 
 
     [HttpGet]

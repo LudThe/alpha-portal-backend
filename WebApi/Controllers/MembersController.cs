@@ -1,4 +1,4 @@
-﻿using Business.Services;
+﻿using Business.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,9 +6,9 @@ namespace WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class MembersController(MemberService memberService) : ControllerBase
+public class MembersController(IMemberService memberService) : ControllerBase
 {
-    private readonly MemberService _memberService = memberService;
+    private readonly IMemberService _memberService = memberService;
 
 
     [HttpGet]
@@ -59,6 +59,7 @@ public class MembersController(MemberService memberService) : ControllerBase
         {
             200 => Ok(result),
             400 => BadRequest(result),
+            404 => NotFound(result),
             _ => Problem(),
         };
     }
@@ -75,6 +76,7 @@ public class MembersController(MemberService memberService) : ControllerBase
         return result.StatusCode switch
         {
             200 => Ok(result),
+            404 => NotFound(result),
             409 => Conflict(result),
             _ => Problem(),
         };

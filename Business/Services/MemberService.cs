@@ -1,30 +1,40 @@
 ﻿using Business.Factories;
-using Data.Repositories;
+using Business.Interfaces;
+using Data.Interfaces;
 using Domain.Models;
 
 namespace Business.Services;
 
-public class MemberService(MemberRepository memberRepository, MemberInformationRepository memberInformationRepository, MemberAddressRepository memberAddressRepository)
+public class MemberService(IMemberRepository memberRepository, IMemberInformationRepository memberInformationRepository, IMemberAddressRepository memberAddressRepository) : IMemberService
 {
-    private readonly MemberRepository _memberRepository = memberRepository;
-    private readonly MemberInformationRepository _memberInformationRepository = memberInformationRepository;
-    private readonly MemberAddressRepository _memberAddressRepository = memberAddressRepository;
+    private readonly IMemberRepository _memberRepository = memberRepository;
+    private readonly IMemberInformationRepository _memberInformationRepository = memberInformationRepository;
+    private readonly IMemberAddressRepository _memberAddressRepository = memberAddressRepository;
 
 
     public async Task<IEnumerable<Member>> GetAll()
     {
-        var list = await _memberRepository.GetAllAsync(
-            selector: x => MemberFactory.Map(x)!
-        );
+        var entities = await _memberRepository.GetAllAsync(
+             orderByDescending: true,
+                sortBy: x => x.FirstName,
+                filterBy: null,
+                i => i.ContactInformation,
+                i => i.Address,
+                i => i.MemberRole
+            );
+        var members = entities.Select(MemberFactory.Map);
 
-        return list.OrderBy(x => x.Id);
+        return members!;
     }
 
 
     public async Task<Member?> GetById(int id)
     {
         var memberEntity = await _memberRepository.GetAsync(
-                predicate: x => x.Id == id
+                findBy: x => x.Id == id,
+                i => i.ContactInformation,
+                i => i.Address,
+                i => i.MemberRole
             );
 
         if (memberEntity == null) return null;
@@ -68,7 +78,12 @@ public class MemberService(MemberRepository memberRepository, MemberInformationR
         if (form == null)
             return ServiceResult.BadRequest();
 
-        var memberEntity = await _memberRepository.GetAsync(x => x.Id == id);
+        var memberEntity = await _memberRepository.GetAsync(
+                findBy: x => x.Id == id,
+                i => i.ContactInformation,
+                i => i.Address,
+                i => i.MemberRole
+            );
 
         if (memberEntity == null) return ServiceResult.NotFound();
 
@@ -94,7 +109,10 @@ public class MemberService(MemberRepository memberRepository, MemberInformationR
 
     public async Task<ServiceResult> RemoveAsync(int id)
     {
-        var memberEntity = await _memberRepository.GetAsync(x => x.Id == id);
+        var memberEntity = await _memberRepository.GetAsync(
+                findBy: x => x.Id == id,
+                i => i.Projects
+            );
 
         if (memberEntity == null) return ServiceResult.NotFound();
 

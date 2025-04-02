@@ -1,29 +1,38 @@
 ﻿using Business.Factories;
-using Data.Repositories;
+using Business.Interfaces;
+using Data.Interfaces;
 using Domain.Models;
 
 namespace Business.Services;
 
-public class ClientService(ClientRepository clientRepository, ClientInformationRepository clientInformationRepository, ClientAddressRepository clientAddressRepository)
+public class ClientService(IClientRepository clientRepository, IClientInformationRepository clientInformationRepository, IClientAddressRepository clientAddressRepository) : IClientService
 {
-    private readonly ClientRepository _clientRepository = clientRepository;
-    private readonly ClientInformationRepository _clientInformationRepository = clientInformationRepository;
-    private readonly ClientAddressRepository _clientAddressRepository = clientAddressRepository;
+    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IClientInformationRepository _clientInformationRepository = clientInformationRepository;
+    private readonly IClientAddressRepository _clientAddressRepository = clientAddressRepository;
 
     public async Task<IEnumerable<Client>> GetAll()
     {
-        var list = await _clientRepository.GetAllAsync(
-            selector: x => ClientFactory.Map(x)!
+        var entities = await _clientRepository.GetAllAsync(
+                orderByDescending: true,
+                sortBy: x => x.Created,
+                filterBy: null,
+                i => i.ContactInformation,
+                i => i.Address
         );
 
-        return list.OrderBy(x => x.Id);
+        var clients = entities.Select(ClientFactory.Map);
+
+        return clients!;
     }
 
 
     public async Task<Client?> GetById(int id)
     {
         var clientEntity = await _clientRepository.GetAsync(
-                predicate: x => x.Id == id
+                findBy: x => x.Id == id,
+                i => i.ContactInformation,
+                i => i.Address
             );
 
         if (clientEntity == null) return null;
@@ -67,7 +76,11 @@ public class ClientService(ClientRepository clientRepository, ClientInformationR
         if (form == null)
             return ServiceResult.BadRequest();
 
-        var clientEntity = await _clientRepository.GetAsync(x => x.Id == id);
+        var clientEntity = await _clientRepository.GetAsync(
+                findBy: x => x.Id == id,
+                i => i.ContactInformation,
+                i => i.Address
+         );
 
         if (clientEntity == null) return ServiceResult.NotFound();
 
@@ -93,7 +106,10 @@ public class ClientService(ClientRepository clientRepository, ClientInformationR
 
     public async Task<ServiceResult> RemoveAsync(int id)
     {
-        var clientEntity = await _clientRepository.GetAsync(x => x.Id == id);
+        var clientEntity = await _clientRepository.GetAsync(
+                findBy: x => x.Id == id,
+                i => i.Projects
+            );
 
         if (clientEntity == null) return ServiceResult.NotFound();
 

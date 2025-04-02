@@ -1,30 +1,30 @@
+using Business.Interfaces;
 using Business.Services;
 using Data.Contexts;
+using Data.Interfaces;
 using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<DataContext>(x =>
-    x.UseLazyLoadingProxies()
-    .UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
+builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
 
 
-builder.Services.AddScoped<ClientRepository>();
-builder.Services.AddScoped<ClientInformationRepository>();
-builder.Services.AddScoped<ClientAddressRepository>();
-builder.Services.AddScoped<MemberRepository>();
-builder.Services.AddScoped<MemberRoleRepository>();
-builder.Services.AddScoped<MemberInformationRepository>();
-builder.Services.AddScoped<MemberAddressRepository>();
-builder.Services.AddScoped<ProjectRepository>();
-builder.Services.AddScoped<ProjectStatusRepository>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IClientInformationRepository, ClientInformationRepository>();
+builder.Services.AddScoped<IClientAddressRepository, ClientAddressRepository>();
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<IMemberRoleRepository, MemberRoleRepository>();
+builder.Services.AddScoped<IMemberInformationRepository, MemberInformationRepository>();
+builder.Services.AddScoped<IMemberAddressRepository, MemberAddressRepository>();
+builder.Services.AddScoped<IProjectStatusRepository, ProjectStatusRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
-builder.Services.AddScoped<ClientService>();
-builder.Services.AddScoped<MemberService>();
-builder.Services.AddScoped<MemberRoleService>();
-builder.Services.AddScoped<ProjectService>();
-builder.Services.AddScoped<ProjectStatusService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IMemberRoleService, MemberRoleService>();
+builder.Services.AddScoped<IProjectStatusService, ProjectStatusService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 
 builder.Services.AddCors(x =>
