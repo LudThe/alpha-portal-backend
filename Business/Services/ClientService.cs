@@ -1,18 +1,37 @@
 ﻿using Business.Factories;
 using Business.Interfaces;
+using Business.Managers;
 using Data.Interfaces;
 using Domain.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Business.Services;
 
-public class ClientService(IClientRepository clientRepository, IClientInformationRepository clientInformationRepository, IClientAddressRepository clientAddressRepository) : IClientService
+public class ClientService(IClientRepository clientRepository, IClientInformationRepository clientInformationRepository, IClientAddressRepository clientAddressRepository, IMemoryCache cache) : IClientService
 {
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IClientInformationRepository _clientInformationRepository = clientInformationRepository;
     private readonly IClientAddressRepository _clientAddressRepository = clientAddressRepository;
+    private readonly IMemoryCache _cache = cache;
+
+
+    private void ClearCache()
+    {
+        foreach (var key in CacheManager.ClientKeys)
+        {
+            _cache.Remove(key);
+        }
+        CacheManager.ClientKeys.Clear();
+    }
+
 
     public async Task<IEnumerable<Client>> GetAll()
     {
+        var cacheKey = "clients_all";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<Client>? cachedClients))
+            return cachedClients!;
+
+
         var entities = await _clientRepository.GetAllAsync(
                 orderByDescending: true,
                 sortBy: x => x.Created,
@@ -23,12 +42,20 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
 
         var clients = entities.Select(ClientFactory.Map);
 
+        CacheManager.ClientKeys.Add(cacheKey);
+        _cache.Set(cacheKey, clients, TimeSpan.FromMinutes(5));
+
         return clients!;
     }
 
 
     public async Task<Client?> GetById(int id)
     {
+        var cacheKey = $"client_{id}";
+        if (_cache.TryGetValue(cacheKey, out Client? cachedClient))
+            return cachedClient!;
+
+
         var clientEntity = await _clientRepository.GetAsync(
                 findBy: x => x.Id == id,
                 i => i.ContactInformation,
@@ -38,6 +65,10 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
         if (clientEntity == null) return null;
 
         var client = ClientFactory.Map(clientEntity);
+
+        CacheManager.ClientKeys.Add(cacheKey);
+        _cache.Set(cacheKey, client, TimeSpan.FromMinutes(5));
+
         return client;
     }
 
@@ -61,6 +92,8 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
             await _clientInformationRepository.AddAsync(clientEntity!.ContactInformation);
 
             await _clientAddressRepository.AddAsync(clientEntity.Address);
+
+            ClearCache();
 
             return ServiceResult.Created();
         }
@@ -95,6 +128,8 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
 
             await _clientAddressRepository.UpdateAsync(updatedClientEntity.Address);
 
+            ClearCache();
+
             return ServiceResult.Ok();
         }
         catch (Exception ex)
@@ -127,6 +162,8 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
             await _clientInformationRepository.RemoveAsync(clientEntity.ContactInformation);
 
             await _clientAddressRepository.RemoveAsync(clientEntity.Address);
+
+            ClearCache();
 
             return ServiceResult.Ok();
         }

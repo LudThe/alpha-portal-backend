@@ -1,17 +1,37 @@
 ﻿using Business.Factories;
 using Business.Interfaces;
+using Business.Managers;
 using Data.Interfaces;
 using Domain.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Business.Services;
 
-public class ProjectService(IProjectRepository projectRepository, IProjectStatusService projectStatusService) : IProjectService
+public class ProjectService(IProjectRepository projectRepository, IProjectStatusService projectStatusService, IMemoryCache cache) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly IProjectStatusService _projectStatusService = projectStatusService;
+    private readonly IMemoryCache _cache = cache;
+
+
+    private void ClearCache()
+    {
+        foreach (var key in CacheManager.ProjectKeys)
+        {
+            _cache.Remove(key);
+        }
+        CacheManager.ProjectKeys.Clear();
+    }
+
 
     public async Task<IEnumerable<Project>> GetAll()
     {
+        var cacheKey = "projects_all";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<Project>? cachedProjects))
+            return cachedProjects!;
+
+
+
         var entities = await _projectRepository.GetAllAsync(
                 orderByDescending: true,
                 sortBy: x => x.Created,
@@ -27,12 +47,20 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
             );
         var projects = entities.Select(ProjectFactory.Map);
 
+        CacheManager.ProjectKeys.Add(cacheKey);
+        _cache.Set(cacheKey, projects, TimeSpan.FromMinutes(5));
+
         return projects!;
     }
 
 
     public async Task<Project?> GetById(int id)
     {
+        var cacheKey = $"project_{id}";
+        if (_cache.TryGetValue(cacheKey, out Project? cachedProject))
+            return cachedProject!;
+
+
         var projectEntity = await _projectRepository.GetAsync(
                 findBy: x => x.Id == id,
                 i => i.Client,
@@ -48,6 +76,10 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
         if (projectEntity == null) return null;
 
         var project = ProjectFactory.Map(projectEntity);
+
+        CacheManager.ProjectKeys.Add(cacheKey);
+        _cache.Set(cacheKey, project, TimeSpan.FromMinutes(5));
+
         return project;
     }
 
@@ -74,6 +106,8 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
             var result = await _projectRepository.AddAsync(projectEntity!);
             if (!result)
                 return ServiceResult.Failed();
+
+            ClearCache();
 
             return ServiceResult.Created();
         }
@@ -106,6 +140,8 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
             if (!result)
                 return ServiceResult.Failed();
 
+            ClearCache();
+
             return ServiceResult.Ok();
         }
         catch (Exception ex)
@@ -126,6 +162,8 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
             var result = await _projectRepository.RemoveAsync(projectEntity);
             if (!result)
                 return ServiceResult.Failed();
+
+            ClearCache();
 
             return ServiceResult.Ok();
         }
