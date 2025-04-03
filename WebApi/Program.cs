@@ -4,6 +4,7 @@ using Data.Contexts;
 using Data.Interfaces;
 using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Extensions.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +54,9 @@ app.UseSwaggerUI(x =>
     x.RoutePrefix = string.Empty;
 });
 app.UseHttpsRedirection();
+
+app.UseMiddleware<DefaultApiKeyMiddleware>();
+
 app.UseAuthorization();
 app.MapControllers();
 
