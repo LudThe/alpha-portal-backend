@@ -68,19 +68,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MemberRoles",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MemberRoleName = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MemberRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProjectStatuses",
                 columns: table => new
                 {
@@ -284,69 +271,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Members",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Modified = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MemberRoleId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Members", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Members_MemberRoles_MemberRoleId",
-                        column: x => x.MemberRoleId,
-                        principalTable: "MemberRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MemberAddresses",
-                columns: table => new
-                {
-                    MemberId = table.Column<int>(type: "int", nullable: false),
-                    StreetAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MemberAddresses", x => x.MemberId);
-                    table.ForeignKey(
-                        name: "FK_MemberAddresses_Members_MemberId",
-                        column: x => x.MemberId,
-                        principalTable: "Members",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MemberInformation",
-                columns: table => new
-                {
-                    MemberId = table.Column<int>(type: "int", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MemberInformation", x => x.MemberId);
-                    table.ForeignKey(
-                        name: "FK_MemberInformation_Members_MemberId",
-                        column: x => x.MemberId,
-                        principalTable: "Members",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Projects",
                 columns: table => new
                 {
@@ -362,8 +286,7 @@ namespace Data.Migrations
                     Modified = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ClientId = table.Column<int>(type: "int", nullable: false),
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProjectStatusId = table.Column<int>(type: "int", nullable: false),
-                    MemberEntityId = table.Column<int>(type: "int", nullable: true)
+                    ProjectStatusId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -380,11 +303,6 @@ namespace Data.Migrations
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Projects_Members_MemberEntityId",
-                        column: x => x.MemberEntityId,
-                        principalTable: "Members",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Projects_ProjectStatuses_ProjectStatusId",
                         column: x => x.ProjectStatusId,
@@ -439,23 +357,6 @@ namespace Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_MemberInformation_Email",
-                table: "MemberInformation",
-                column: "Email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MemberRoles_MemberRoleName",
-                table: "MemberRoles",
-                column: "MemberRoleName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Members_MemberRoleId",
-                table: "Members",
-                column: "MemberRoleId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Projects_AppUserId",
                 table: "Projects",
                 column: "AppUserId");
@@ -464,11 +365,6 @@ namespace Data.Migrations
                 name: "IX_Projects_ClientId",
                 table: "Projects",
                 column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Projects_MemberEntityId",
-                table: "Projects",
-                column: "MemberEntityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ProjectStatusId",
@@ -513,12 +409,6 @@ namespace Data.Migrations
                 name: "ClientInformation");
 
             migrationBuilder.DropTable(
-                name: "MemberAddresses");
-
-            migrationBuilder.DropTable(
-                name: "MemberInformation");
-
-            migrationBuilder.DropTable(
                 name: "Projects");
 
             migrationBuilder.DropTable(
@@ -531,13 +421,7 @@ namespace Data.Migrations
                 name: "Clients");
 
             migrationBuilder.DropTable(
-                name: "Members");
-
-            migrationBuilder.DropTable(
                 name: "ProjectStatuses");
-
-            migrationBuilder.DropTable(
-                name: "MemberRoles");
         }
     }
 }

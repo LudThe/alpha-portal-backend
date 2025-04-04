@@ -213,103 +213,6 @@ namespace Data.Migrations
                     b.ToTable("ClientInformation");
                 });
 
-            modelBuilder.Entity("Data.Entities.MemberAddressEntity", b =>
-                {
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StreetAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MemberId");
-
-                    b.ToTable("MemberAddresses");
-                });
-
-            modelBuilder.Entity("Data.Entities.MemberEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JobTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MemberRoleId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Modified")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MemberRoleId");
-
-                    b.ToTable("Members");
-                });
-
-            modelBuilder.Entity("Data.Entities.MemberInformationEntity", b =>
-                {
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MemberId");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("MemberInformation");
-                });
-
-            modelBuilder.Entity("Data.Entities.MemberRoleEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("MemberRoleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MemberRoleName")
-                        .IsUnique();
-
-                    b.ToTable("MemberRoles");
-                });
-
             modelBuilder.Entity("Data.Entities.ProjectEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -340,9 +243,6 @@ namespace Data.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("MemberEntityId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Modified")
                         .HasColumnType("datetime2");
 
@@ -361,8 +261,6 @@ namespace Data.Migrations
                     b.HasIndex("AppUserId");
 
                     b.HasIndex("ClientId");
-
-                    b.HasIndex("MemberEntityId");
 
                     b.HasIndex("ProjectStatusId");
 
@@ -566,39 +464,6 @@ namespace Data.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("Data.Entities.MemberAddressEntity", b =>
-                {
-                    b.HasOne("Data.Entities.MemberEntity", "Member")
-                        .WithOne("Address")
-                        .HasForeignKey("Data.Entities.MemberAddressEntity", "MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
-                });
-
-            modelBuilder.Entity("Data.Entities.MemberEntity", b =>
-                {
-                    b.HasOne("Data.Entities.MemberRoleEntity", "MemberRole")
-                        .WithMany()
-                        .HasForeignKey("MemberRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MemberRole");
-                });
-
-            modelBuilder.Entity("Data.Entities.MemberInformationEntity", b =>
-                {
-                    b.HasOne("Data.Entities.MemberEntity", "Member")
-                        .WithOne("ContactInformation")
-                        .HasForeignKey("Data.Entities.MemberInformationEntity", "MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
-                });
-
             modelBuilder.Entity("Data.Entities.ProjectEntity", b =>
                 {
                     b.HasOne("Data.Entities.AppUserEntity", "AppUser")
@@ -612,10 +477,6 @@ namespace Data.Migrations
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Data.Entities.MemberEntity", null)
-                        .WithMany("Projects")
-                        .HasForeignKey("MemberEntityId");
 
                     b.HasOne("Data.Entities.ProjectStatusEntity", "ProjectStatus")
                         .WithMany()
@@ -695,17 +556,6 @@ namespace Data.Migrations
                     b.Navigation("Address");
 
                     b.Navigation("ContactInformation");
-
-                    b.Navigation("Projects");
-                });
-
-            modelBuilder.Entity("Data.Entities.MemberEntity", b =>
-                {
-                    b.Navigation("Address")
-                        .IsRequired();
-
-                    b.Navigation("ContactInformation")
-                        .IsRequired();
 
                     b.Navigation("Projects");
                 });

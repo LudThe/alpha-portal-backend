@@ -18,17 +18,11 @@ builder.Services.AddScoped<IAppUserProfileRepository, AppUserProfileRepository>(
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IClientInformationRepository, ClientInformationRepository>();
 builder.Services.AddScoped<IClientAddressRepository, ClientAddressRepository>();
-builder.Services.AddScoped<IMemberRepository, MemberRepository>();
-builder.Services.AddScoped<IMemberRoleRepository, MemberRoleRepository>();
-builder.Services.AddScoped<IMemberInformationRepository, MemberInformationRepository>();
-builder.Services.AddScoped<IMemberAddressRepository, MemberAddressRepository>();
 builder.Services.AddScoped<IProjectStatusRepository, ProjectStatusRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
 builder.Services.AddScoped<IAppUserService, AppUserService>();
 builder.Services.AddScoped<IClientService, ClientService>();
-builder.Services.AddScoped<IMemberService, MemberService>();
-builder.Services.AddScoped<IMemberRoleService, MemberRoleService>();
 builder.Services.AddScoped<IProjectStatusService, ProjectStatusService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 
