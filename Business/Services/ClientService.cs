@@ -49,7 +49,7 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
     }
 
 
-    public async Task<Client?> GetById(int id)
+    public async Task<Client?> GetById(string id)
     {
         var cacheKey = $"client_{id}";
         if (_cache.TryGetValue(cacheKey, out Client? cachedClient))
@@ -104,7 +104,7 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
     }
 
 
-    public async Task<ServiceResult> UpdateAsync(int id, ClientRegistrationForm form)
+    public async Task<ServiceResult> UpdateAsync(string id, ClientRegistrationForm form)
     {
         if (form == null)
             return ServiceResult.BadRequest();
@@ -139,7 +139,7 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
     }
 
 
-    public async Task<ServiceResult> RemoveAsync(int id)
+    public async Task<ServiceResult> RemoveAsync(string id)
     {
         var clientEntity = await _clientRepository.GetAsync(
                 findBy: x => x.Id == id,

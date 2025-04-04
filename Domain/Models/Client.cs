@@ -2,11 +2,12 @@
 
 public class Client
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = null!;
     public string? ClientName { get; set; }
     public DateTime? Created { get; set; }
     public DateTime? Modified { get; set; }
     public bool? IsActive { get; set; }
+    public string? ImageUrl { get; set; }
     public ClientInformation ClientInformation { get; set; } = new();
     public ClientAddress ClientAddress { get; set; } = new();
 }

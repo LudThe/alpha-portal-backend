@@ -4,13 +4,14 @@ using Data.Contexts;
 using Data.Interfaces;
 using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using WebApi.Extensions.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
 
-
+builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
+builder.Services.AddScoped<IAppUserAddressRepository, AppUserAddressRepository>();
+builder.Services.AddScoped<IAppUserProfileRepository, AppUserProfileRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IClientInformationRepository, ClientInformationRepository>();
 builder.Services.AddScoped<IClientAddressRepository, ClientAddressRepository>();
@@ -21,6 +22,7 @@ builder.Services.AddScoped<IMemberAddressRepository, MemberAddressRepository>();
 builder.Services.AddScoped<IProjectStatusRepository, ProjectStatusRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
+builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IMemberRoleService, MemberRoleService>();
@@ -55,7 +57,7 @@ app.UseSwaggerUI(x =>
 });
 app.UseHttpsRedirection();
 
-app.UseMiddleware<DefaultApiKeyMiddleware>();
+//app.UseMiddleware<DefaultApiKeyMiddleware>();
 
 app.UseAuthorization();
 app.MapControllers();

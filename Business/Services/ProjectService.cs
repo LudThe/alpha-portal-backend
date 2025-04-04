@@ -39,10 +39,9 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
                 i => i.Client,
                 i => i.Client.ContactInformation,
                 i => i.Client.Address,
-                i => i.Member,
-                i => i.Member.ContactInformation,
-                i => i.Member.Address,
-                i => i.Member.MemberRole,
+                i => i.AppUser,
+                i => i.AppUser.AppUserProfile,
+                i => i.AppUser.AppUserAddress,
                 i => i.ProjectStatus
             );
         var projects = entities.Select(ProjectFactory.Map);
@@ -54,7 +53,7 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
     }
 
 
-    public async Task<Project?> GetById(int id)
+    public async Task<Project?> GetById(string id)
     {
         var cacheKey = $"project_{id}";
         if (_cache.TryGetValue(cacheKey, out Project? cachedProject))
@@ -66,10 +65,8 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
                 i => i.Client,
                 i => i.Client.ContactInformation,
                 i => i.Client.Address,
-                i => i.Member,
-                i => i.Member.ContactInformation,
-                i => i.Member.Address,
-                i => i.Member.MemberRole,
+                i => i.AppUser.AppUserProfile,
+                i => i.AppUser.AppUserAddress,
                 i => i.ProjectStatus
             );
 
@@ -119,7 +116,7 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
 
 
 
-    public async Task<ServiceResult> UpdateAsync(int id, ProjectRegistrationForm form)
+    public async Task<ServiceResult> UpdateAsync(string id, ProjectRegistrationForm form)
     {
         if (form == null)
             return ServiceResult.BadRequest();
@@ -127,7 +124,7 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
         var projectEntity = await _projectRepository.GetAsync(
                 findBy: x => x.Id == id,
                 i => i.Client,
-                i => i.Member,
+                i => i.AppUser,
                 i => i.ProjectStatus
             );
 
@@ -151,7 +148,7 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
     }
 
 
-    public async Task<ServiceResult> RemoveAsync(int id)
+    public async Task<ServiceResult> RemoveAsync(string id)
     {
         var projectEntity = await _projectRepository.GetAsync(x => x.Id == id);
 

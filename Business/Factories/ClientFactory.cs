@@ -30,6 +30,7 @@ public class ClientFactory
             Created = entity.Created,
             Modified = entity.Modified,
             IsActive = entity.IsActive,
+            ImageUrl = entity.ImageUrl,
             ClientInformation = contact,
             ClientAddress = address
         };
@@ -65,6 +66,7 @@ public class ClientFactory
             Modified = dateTime,
             IsActive = true,
             ContactInformation = contact,
+            ImageUrl = form.ImageUrl,
             Address = address,
         };
 
@@ -78,6 +80,7 @@ public class ClientFactory
 
         clientEntity.ClientName = form.ClientName;
         clientEntity.Modified = DateTime.UtcNow;
+        clientEntity.ImageUrl = form.ImageUrl;
 
         clientEntity.ContactInformation.Email = form.Email;
         clientEntity.ContactInformation.Phone = form.Phone;

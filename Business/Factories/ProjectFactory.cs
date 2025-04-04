@@ -12,7 +12,7 @@ public class ProjectFactory
 
         var client = ClientFactory.Map(entity.Client);
 
-        var member = MemberFactory.Map(entity.Member);
+        var appUser = AppUserFactory.Map(entity.AppUser);
 
         var status = ProjectStatusFactory.Map(entity.ProjectStatus);
 
@@ -21,13 +21,14 @@ public class ProjectFactory
             Id = entity.Id,
             ProjectName = entity.ProjectName,
             Description = entity.Description,
+            ImageUrl = entity.ImageUrl,
             Budget = entity.Budget,
             StartDate = entity.StartDate,
             EndDate = entity.EndDate,
             Created = entity.Created,
             Modified = entity.Modified,
             Client = client!,
-            ProjectOwner = member!,
+            ProjectOwner = appUser!,
             ProjectStatus = status!,
         };
 
@@ -45,13 +46,14 @@ public class ProjectFactory
         {
             ProjectName = form.ProjectName,
             Description = form.Description,
+            ImageUrl = form.ImageUrl,
             Budget = form.Budget,
             StartDate = form.StartDate,
             EndDate = form.EndDate,
             Created = dateTime,
             Modified = dateTime,
-            ClientId = form.ClientId,
-            MemberId = form.MemberId,
+            ClientId = form.ClientId!,
+            AppUserId = form.AppUserId!,
             ProjectStatusId = form.ProjectStatusId
         };
 
@@ -65,6 +67,7 @@ public class ProjectFactory
 
         projectEntity.ProjectName = form.ProjectName;
         projectEntity.Description = form.Description;
+        projectEntity.ImageUrl = form.ImageUrl;
         projectEntity.Budget = form.Budget;
 
         projectEntity.StartDate = form.StartDate;
@@ -72,8 +75,8 @@ public class ProjectFactory
 
         projectEntity.Modified = DateTime.UtcNow;
 
-        projectEntity.ClientId = form.ClientId;
-        projectEntity.MemberId = form.MemberId;
+        projectEntity.ClientId = form.ClientId!;
+        projectEntity.AppUserId = form.AppUserId!;
         projectEntity.ProjectStatusId = form.ProjectStatusId;
 
         return projectEntity;

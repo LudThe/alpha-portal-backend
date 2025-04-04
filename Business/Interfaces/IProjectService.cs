@@ -6,8 +6,8 @@ namespace Business.Interfaces
     {
         Task<ServiceResult> CreateAsync(ProjectRegistrationForm form);
         Task<IEnumerable<Project>> GetAll();
-        Task<Project?> GetById(int id);
-        Task<ServiceResult> RemoveAsync(int id);
-        Task<ServiceResult> UpdateAsync(int id, ProjectRegistrationForm form);
+        Task<Project?> GetById(string id);
+        Task<ServiceResult> RemoveAsync(string id);
+        Task<ServiceResult> UpdateAsync(string id, ProjectRegistrationForm form);
     }
 }
