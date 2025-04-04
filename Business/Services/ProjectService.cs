@@ -53,7 +53,7 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
     }
 
 
-    public async Task<Project?> GetById(string id)
+    public async Task<Project?> GetById(int id)
     {
         var cacheKey = $"project_{id}";
         if (_cache.TryGetValue(cacheKey, out Project? cachedProject))
@@ -116,7 +116,7 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
 
 
 
-    public async Task<ServiceResult> UpdateAsync(string id, ProjectRegistrationForm form)
+    public async Task<ServiceResult> UpdateAsync(int id, ProjectRegistrationForm form)
     {
         if (form == null)
             return ServiceResult.BadRequest();
@@ -148,7 +148,7 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
     }
 
 
-    public async Task<ServiceResult> RemoveAsync(string id)
+    public async Task<ServiceResult> RemoveAsync(int id)
     {
         var projectEntity = await _projectRepository.GetAsync(x => x.Id == id);
 

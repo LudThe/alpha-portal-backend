@@ -12,10 +12,12 @@ public class AppUserProfile
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? JobTitle { get; set; }
+    public string UserRole { get; set; } = null!;
     public string? Phone { get; set; }
+    public string Email { get; set; } = null!;
     public string? ImageUrl { get; set; }
-    public DateTime? Created { get; set; }
-    public DateTime? Modified { get; set; }
+    public DateTime Created { get; set; }
+    public DateTime Modified { get; set; }
 }
 
 public class AppUserAddress

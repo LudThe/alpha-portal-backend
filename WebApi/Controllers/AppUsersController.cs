@@ -1,4 +1,4 @@
-﻿using Business.Interfaces;
+﻿using Business.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,35 +6,35 @@ namespace WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class MembersController(IMemberService memberService) : ControllerBase
+public class AppUsersController(IAppUserService appUserService) : ControllerBase
 {
-    private readonly IMemberService _memberService = memberService;
+    private readonly IAppUserService _appUserService = appUserService;
 
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var members = await _memberService.GetAll();
-        return Ok(members);
+        var appUsers = await _appUserService.GetAll();
+        return Ok(appUsers);
     }
 
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(string id)
     {
-        var member = await _memberService.GetById(id);
-        if (member == null) return NotFound();
-        return Ok(member);
+        var appUser = await _appUserService.GetById(id);
+        if (appUser == null) return NotFound();
+        return Ok(appUser);
     }
 
 
     [HttpPost]
-    public async Task<IActionResult> Create(MemberRegistrationForm form)
+    public async Task<IActionResult> CreateNoPassword(AppUserRegistrationForm form)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _memberService.CreateAsync(form);
+        var result = await _appUserService.CreateWithoutPasswordAsync(form);
 
         return result.StatusCode switch
         {
@@ -48,12 +48,12 @@ public class MembersController(IMemberService memberService) : ControllerBase
 
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, MemberRegistrationForm form)
+    public async Task<IActionResult> Update(string id, AppUserRegistrationForm form)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _memberService.UpdateAsync(id, form);
+        var result = await _appUserService.UpdateAsync(id, form);
 
         return result.StatusCode switch
         {
@@ -66,12 +66,12 @@ public class MembersController(IMemberService memberService) : ControllerBase
 
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Remove(int id)
+    public async Task<IActionResult> Remove(string id)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _memberService.RemoveAsync(id);
+        var result = await _appUserService.RemoveAsync(id);
 
         return result.StatusCode switch
         {

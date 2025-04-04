@@ -8,7 +8,7 @@ public class ProjectRegistrationForm
     public decimal? Budget { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public string? ClientId { get; set; }
+    public int ClientId { get; set; }
     public string? AppUserId { get; set; }
     public int ProjectStatusId { get; set; }
 }

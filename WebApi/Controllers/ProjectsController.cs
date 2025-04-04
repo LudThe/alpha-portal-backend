@@ -20,7 +20,7 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
 
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
+    public async Task<IActionResult> GetById(int id)
     {
         var project = await _projectService.GetById(id);
         if (project == null) return NotFound();
@@ -48,7 +48,7 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
 
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, ProjectRegistrationForm form)
+    public async Task<IActionResult> Update(int id, ProjectRegistrationForm form)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -66,7 +66,7 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
 
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Remove(string id)
+    public async Task<IActionResult> Remove(int id)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

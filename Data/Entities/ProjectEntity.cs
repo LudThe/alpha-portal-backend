@@ -6,7 +6,7 @@ namespace Data.Entities;
 public class ProjectEntity
 {
     [Key]
-    public string Id { get; set; } = null!;
+    public int Id { get; set; }
     public string ProjectName { get; set; } = null!;
     public string? Description { get; set; }
     public string? ImageUrl { get; set; }
@@ -25,7 +25,7 @@ public class ProjectEntity
     public DateTime Modified { get; set; }
 
     [ForeignKey(nameof(Client))]
-    public string ClientId { get; set; } = null!;
+    public int ClientId { get; set; }
     public virtual ClientEntity Client { get; set; } = null!;
 
 

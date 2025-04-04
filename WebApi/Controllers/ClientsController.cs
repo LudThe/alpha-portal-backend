@@ -19,7 +19,7 @@ public class ClientsController(IClientService clientService) : ControllerBase
 
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
+    public async Task<IActionResult> GetById(int id)
     {
         var client = await _clientService.GetById(id);
         if (client == null) return NotFound();
@@ -47,7 +47,7 @@ public class ClientsController(IClientService clientService) : ControllerBase
 
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, ClientRegistrationForm form)
+    public async Task<IActionResult> Update(int id, ClientRegistrationForm form)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -65,7 +65,7 @@ public class ClientsController(IClientService clientService) : ControllerBase
 
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Remove(string id)
+    public async Task<IActionResult> Remove(int id)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

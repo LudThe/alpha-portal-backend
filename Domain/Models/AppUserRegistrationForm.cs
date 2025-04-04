@@ -1,6 +1,6 @@
 ﻿namespace Domain.Models;
 
-public class MemberRegistrationForm
+public class AppUserRegistrationForm
 {
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
@@ -11,5 +11,5 @@ public class MemberRegistrationForm
     public string StreetAddress { get; set; } = null!;
     public string PostalCode { get; set; } = null!;
     public string City { get; set; } = null!;
-    public int MemberRoleId { get; set; }
+    public string AppUserRole { get; set; } = null!;
 }

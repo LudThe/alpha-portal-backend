@@ -41,7 +41,7 @@ public class MemberFactory
     }
 
 
-    public static MemberEntity? Create(MemberRegistrationForm form)
+    public static MemberEntity? Create(AppUserRegistrationForm form)
     {
         if (form == null) return null;
 
@@ -69,14 +69,13 @@ public class MemberFactory
             Modified = dateTime,
             ContactInformation = contact,
             Address = address,
-            MemberRoleId = form.MemberRoleId,
         };
 
         return member;
     }
 
 
-    public static MemberEntity? Update(MemberEntity memberEntity, MemberRegistrationForm form)
+    public static MemberEntity? Update(MemberEntity memberEntity, AppUserRegistrationForm form)
     {
         if (form == null) return null;
 
@@ -92,7 +91,6 @@ public class MemberFactory
         memberEntity.Address.PostalCode = form.PostalCode;
         memberEntity.Address.City = form.City;
 
-        memberEntity.MemberRoleId = form.MemberRoleId;
 
         return memberEntity;
     }

@@ -7,7 +7,7 @@ namespace Data.Entities;
 public class ClientEntity
 {
     [Key]
-    public string Id { get; set; } = null!;
+    public int Id { get; set; }
     public string ClientName { get; set; } = null!;
     public DateTime Created { get; set; }
     public DateTime Modified { get; set; }

@@ -6,6 +6,8 @@ namespace Data.Contexts;
 
 public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<AppUserEntity>(options)
 {
+    public virtual DbSet<AppUserAddressEntity> AppUserAddresses { get; set; }
+    public virtual DbSet<AppUserProfileEntity> AppUserProfiles { get; set; }
     public virtual DbSet<ClientEntity> Clients { get; set; }
     public virtual DbSet<ClientInformationEntity> ClientInformation { get; set; }
     public virtual DbSet<ClientAddressEntity> ClientAddresses { get; set; }

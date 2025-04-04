@@ -44,7 +44,7 @@ public class MemberService(IMemberRepository memberRepository, IMemberInformatio
     }
 
 
-    public async Task<ServiceResult> CreateAsync(MemberRegistrationForm form)
+    public async Task<ServiceResult> CreateAsync(AppUserRegistrationForm form)
     {
         if (form == null)
             return ServiceResult.BadRequest();
@@ -73,7 +73,7 @@ public class MemberService(IMemberRepository memberRepository, IMemberInformatio
     }
 
 
-    public async Task<ServiceResult> UpdateAsync(int id, MemberRegistrationForm form)
+    public async Task<ServiceResult> UpdateAsync(int id, AppUserRegistrationForm form)
     {
         if (form == null)
             return ServiceResult.BadRequest();

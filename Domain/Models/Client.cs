@@ -2,7 +2,7 @@
 
 public class Client
 {
-    public string Id { get; set; } = null!;
+    public int Id { get; set; }
     public string? ClientName { get; set; }
     public DateTime? Created { get; set; }
     public DateTime? Modified { get; set; }

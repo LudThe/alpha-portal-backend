@@ -4,10 +4,10 @@ namespace Business.Interfaces
 {
     public interface IMemberService
     {
-        Task<ServiceResult> CreateAsync(MemberRegistrationForm form);
+        Task<ServiceResult> CreateAsync(AppUserRegistrationForm form);
         Task<IEnumerable<Member>> GetAll();
         Task<Member?> GetById(int id);
         Task<ServiceResult> RemoveAsync(int id);
-        Task<ServiceResult> UpdateAsync(int id, MemberRegistrationForm form);
+        Task<ServiceResult> UpdateAsync(int id, AppUserRegistrationForm form);
     }
 }

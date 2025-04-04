@@ -1,13 +1,16 @@
 using Business.Interfaces;
 using Business.Services;
 using Data.Contexts;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
+builder.Services.AddIdentity<AppUserEntity, IdentityRole>(x => { }).AddEntityFrameworkStores<DataContext>();
 
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IAppUserAddressRepository, AppUserAddressRepository>();
@@ -22,7 +25,7 @@ builder.Services.AddScoped<IMemberAddressRepository, MemberAddressRepository>();
 builder.Services.AddScoped<IProjectStatusRepository, ProjectStatusRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
-builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
+builder.Services.AddScoped<IAppUserService, AppUserService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IMemberRoleService, MemberRoleService>();
@@ -47,6 +50,9 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+//await SeedData.SetRolesAsync(app);
+
 app.UseCors("AllowAll");
 app.MapOpenApi();
 app.UseSwagger();
@@ -59,6 +65,7 @@ app.UseHttpsRedirection();
 
 //app.UseMiddleware<DefaultApiKeyMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

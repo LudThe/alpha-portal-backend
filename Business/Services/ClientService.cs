@@ -49,7 +49,7 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
     }
 
 
-    public async Task<Client?> GetById(string id)
+    public async Task<Client?> GetById(int id)
     {
         var cacheKey = $"client_{id}";
         if (_cache.TryGetValue(cacheKey, out Client? cachedClient))
@@ -104,7 +104,7 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
     }
 
 
-    public async Task<ServiceResult> UpdateAsync(string id, ClientRegistrationForm form)
+    public async Task<ServiceResult> UpdateAsync(int id, ClientRegistrationForm form)
     {
         if (form == null)
             return ServiceResult.BadRequest();
@@ -139,7 +139,7 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
     }
 
 
-    public async Task<ServiceResult> RemoveAsync(string id)
+    public async Task<ServiceResult> RemoveAsync(int id)
     {
         var clientEntity = await _clientRepository.GetAsync(
                 findBy: x => x.Id == id,
@@ -153,7 +153,7 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
             // can't remove if connected to project
             var hasProjects = clientEntity.Projects.Count != 0;
             if (hasProjects)
-                return ServiceResult.Conflict();
+                return ServiceResult.Conflict(message: "Can't remove because the client is connected to a project");
 
             var result = await _clientRepository.RemoveAsync(clientEntity);
             if (!result)

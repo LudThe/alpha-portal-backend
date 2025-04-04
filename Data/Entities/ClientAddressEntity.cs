@@ -6,7 +6,7 @@ namespace Data.Entities;
 public class ClientAddressEntity
 {
     [Key, ForeignKey(nameof(Client))]
-    public string ClientId { get; set; } = null!;
+    public int ClientId { get; set; }
     public virtual ClientEntity Client { get; set; } = null!;
 
     public string StreetAddress { get; set; } = null!;
