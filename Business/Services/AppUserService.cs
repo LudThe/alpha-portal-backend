@@ -29,11 +29,11 @@ public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfil
 
     private void ClearCache()
     {
-        foreach (var key in CacheManager.ClientKeys)
+        foreach (var key in CacheManager.AppUserKeys)
         {
             _cache.Remove(key);
         }
-        CacheManager.ClientKeys.Clear();
+        CacheManager.AppUserKeys.Clear();
     }
 
 
