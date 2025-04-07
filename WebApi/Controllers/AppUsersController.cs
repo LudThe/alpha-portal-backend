@@ -1,8 +1,11 @@
-﻿using Business.Services;
+﻿using Business.Interfaces;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace WebApi.Controllers;
+
 
 [Route("api/[controller]")]
 [ApiController]
@@ -23,6 +26,16 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
     public async Task<IActionResult> GetById(string id)
     {
         var appUser = await _appUserService.GetById(id);
+        if (appUser == null) return NotFound();
+        return Ok(appUser);
+    }
+
+
+    [HttpGet("signedInInfo"), Authorize]
+    public async Task<IActionResult> GetByJwtToken()
+    {
+        var appUserId = User?.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value;
+        var appUser = await _appUserService.GetById(appUserId!);
         if (appUser == null) return NotFound();
         return Ok(appUser);
     }

@@ -1,11 +1,15 @@
+using Business.Handlers;
 using Business.Interfaces;
 using Business.Services;
 using Data.Contexts;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +30,34 @@ builder.Services.AddScoped<IAppUserRoleService, AppUserRoleService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IProjectStatusService, ProjectStatusService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+
+builder.Services.AddTransient<JwtTokenHandler>();
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(x =>
+    {
+        var key = Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"]!);
+        var issuer = builder.Configuration["JWT:Issuer"]!;
+        var audience = builder.Configuration["JWT:Audience"]!;
+
+        x.RequireHttpsMetadata = false; // change to true in prod
+        x.SaveToken = true;
+        x.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateLifetime = true,
+            RequireExpirationTime = true,
+            ClockSkew = TimeSpan.FromMinutes(5),
+            ValidIssuer = issuer,
+            ValidateIssuer = true,
+            ValidAudience = audience,
+            ValidateAudience = true,
+        };
+    });
 
 
 builder.Services.AddCors(x =>

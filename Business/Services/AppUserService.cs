@@ -1,4 +1,6 @@
 ﻿using Business.Factories;
+using Business.Handlers;
+using Business.Interfaces;
 using Business.Managers;
 using Data.Entities;
 using Data.Interfaces;
@@ -9,21 +11,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Business.Services;
 
-public interface IAppUserService
-{
-    Task<ServiceResult> CreateWithoutPasswordAsync(AppUserRegistrationForm form);
-    Task<IEnumerable<AppUser>> GetAll();
-    Task<AppUser?> GetById(string id);
-    Task<ServiceResult> RemoveAsync(string id);
-    Task<ServiceResult> UpdateAsync(string id, AppUserRegistrationForm form);
-}
 
-public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfileRepository appUserProfileRepository, IAppUserAddressRepository appUserAddressRepository, UserManager<AppUserEntity> appUserManager, IMemoryCache cache) : IAppUserService
+
+public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfileRepository appUserProfileRepository, IAppUserAddressRepository appUserAddressRepository, UserManager<AppUserEntity> appUserManager, SignInManager<AppUserEntity> signInManager, JwtTokenHandler jwtTokenHandler, IMemoryCache cache) : IAppUserService
 {
     private readonly IAppUserRepository _appUserRepository = appUserRepository;
     private readonly IAppUserProfileRepository _appUserProfileRepository = appUserProfileRepository;
     private readonly IAppUserAddressRepository _appUserAddressRepository = appUserAddressRepository;
     private readonly UserManager<AppUserEntity> _appUserManager = appUserManager;
+    private readonly SignInManager<AppUserEntity> _signInManager = signInManager;
+    private readonly JwtTokenHandler _jwtTokenHandler = jwtTokenHandler;
     private readonly IMemoryCache _cache = cache;
 
 
@@ -101,10 +98,69 @@ public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfil
     }
 
 
-    //public async Task<ServiceResult> CreateWithPasswordAsync(AppUserRegistrationForm form)
-    //{
 
-    //}
+    public async Task<ServiceResult> SignIn(SignInForm form)
+    {
+        if (form == null)
+            return ServiceResult.BadRequest();
+
+        try
+        {
+            var appUserEntity = await _appUserManager.FindByEmailAsync(form.Email);
+            if (appUserEntity == null)
+                return ServiceResult.Unauthorized();
+
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(appUserEntity, form.Password, false);
+            if (!signInResult.Succeeded)
+                return ServiceResult.Unauthorized();
+
+
+            string? role = null;
+            var roles = await _appUserManager.GetRolesAsync(appUserEntity);
+            if (roles.Count > 0) role = roles[0];
+
+            var token = _jwtTokenHandler.GenerateToken(appUserEntity, role);
+
+            return ServiceResult.SignInOk(token: token);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed(ex.Message);
+        }
+
+    }
+
+
+    public async Task<ServiceResult> CreateWithPasswordAsync(SignUpForm form)
+    {
+        if (form == null)
+            return ServiceResult.BadRequest();
+
+
+        if (await _appUserRepository.ExistsAsync(x => x.Email == form.Email))
+            return ServiceResult.Conflict();
+
+
+        try
+        {
+            var appUserEntity = AppUserFactory.SignUp(form);
+            var result = await _appUserManager.CreateAsync(appUserEntity!, form.Password);
+            if (!result.Succeeded)
+                return ServiceResult.Failed();
+
+            var roleResult = await _appUserManager.AddToRoleAsync(appUserEntity!, "User");
+            if (!roleResult.Succeeded)
+                return ServiceResult.Created(message: "User was added but not assigned a role");
+
+            ClearCache();
+
+            return ServiceResult.Created();
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed(ex.Message);
+        }
+    }
 
 
     public async Task<ServiceResult> CreateWithoutPasswordAsync(AppUserRegistrationForm form)

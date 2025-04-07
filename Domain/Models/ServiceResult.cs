@@ -5,9 +5,13 @@ public class ServiceResult
     public bool Succeeded { get; set; }
     public int StatusCode { get; set; }
     public string? Message { get; set; }
+    public string? Token { get; set; }
 
     public static ServiceResult Ok(string? message = null) =>
         new() { Succeeded = true, StatusCode = 200, Message = message };
+
+    public static ServiceResult SignInOk(string? message = null, string? token = null) =>
+        new() { Succeeded = true, StatusCode = 200, Message = message, Token = token };
 
     public static ServiceResult Created(string? message = null) =>
         new() { Succeeded = true, StatusCode = 201, Message = message };
@@ -17,6 +21,9 @@ public class ServiceResult
 
     public static ServiceResult NotFound(string? message = "Not found") =>
         new() { Succeeded = false, StatusCode = 404, Message = message };
+
+    public static ServiceResult Unauthorized(string? message = "Unauthorized") =>
+       new() { Succeeded = false, StatusCode = 401, Message = message };
 
     public static ServiceResult Conflict(string? message = "Conflict") =>
         new() { Succeeded = false, StatusCode = 409, Message = message };

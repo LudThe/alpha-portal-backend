@@ -40,6 +40,36 @@ public class AppUserFactory
     }
 
 
+    public static AppUserEntity? SignUp(SignUpForm form)
+    {
+        if (form == null) return null;
+
+        DateTime dateTime = DateTime.Now;
+
+        var profile = new AppUserProfileEntity
+        {
+            FirstName = form.FirstName,
+            LastName = form.LastName,
+            Created = dateTime,
+            Modified = dateTime
+        };
+
+        var address = new AppUserAddressEntity
+        {
+        };
+
+        var appUser = new AppUserEntity
+        {
+            UserName = form.Email,
+            Email = form.Email,
+            AppUserProfile = profile,
+            AppUserAddress = address
+        };
+
+        return appUser;
+    }
+
+
     public static AppUserEntity? Create(AppUserRegistrationForm form)
     {
         if (form == null) return null;
