@@ -3,10 +3,11 @@ using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebApi.Extensions.Attributes;
 
 namespace WebApi.Controllers;
 
-
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class AppUsersController(IAppUserService appUserService) : ControllerBase
@@ -40,7 +41,7 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
         return Ok(appUser);
     }
 
-
+    [UseAdminApiKey]
     [HttpPost]
     public async Task<IActionResult> CreateNoPassword(AppUserRegistrationForm form)
     {
@@ -59,7 +60,7 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
         };
     }
 
-
+    [UseAdminApiKey]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, AppUserRegistrationForm form)
     {
@@ -77,7 +78,7 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
         };
     }
 
-
+    [UseAdminApiKey]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Remove(string id)
     {

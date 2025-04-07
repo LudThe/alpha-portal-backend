@@ -1,8 +1,12 @@
 ﻿using Business.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Extensions.Attributes;
 
 namespace WebApi.Controllers;
 
+[Authorize]
+[UseAdminApiKey]
 [Route("api/[controller]")]
 [ApiController]
 public class AppUserRolesController(IAppUserRoleService appUserRoleService) : ControllerBase

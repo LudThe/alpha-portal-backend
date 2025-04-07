@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WebApi.Extensions.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,7 +91,7 @@ app.UseSwaggerUI(x =>
 });
 app.UseHttpsRedirection();
 
-//app.UseMiddleware<DefaultApiKeyMiddleware>();
+app.UseMiddleware<DefaultApiKeyMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

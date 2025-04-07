@@ -2,6 +2,7 @@
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Extensions.Attributes;
 
 namespace WebApi.Controllers;
 
@@ -28,7 +29,7 @@ public class ClientsController(IClientService clientService) : ControllerBase
         return Ok(client);
     }
 
-
+    [UseAdminApiKey]
     [HttpPost]
     public async Task<IActionResult> Create(ClientRegistrationForm form)
     {
@@ -47,7 +48,7 @@ public class ClientsController(IClientService clientService) : ControllerBase
         };
     }
 
-
+    [UseAdminApiKey]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, ClientRegistrationForm form)
     {
@@ -65,7 +66,7 @@ public class ClientsController(IClientService clientService) : ControllerBase
         };
     }
 
-
+    [UseAdminApiKey]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Remove(int id)
     {
