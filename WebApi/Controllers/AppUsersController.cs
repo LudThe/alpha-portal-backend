@@ -2,11 +2,15 @@
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
 using System.Security.Claims;
+using WebApi.Documentation;
 using WebApi.Extensions.Attributes;
 
 namespace WebApi.Controllers;
 
+[Produces("application/json")]
+[Consumes("application/json")]
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
@@ -42,6 +46,7 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
     }
 
     [UseAdminApiKey]
+    [SwaggerRequestExample(typeof(AppUserRegistrationForm), typeof(AppUserRegistrationExample))]
     [HttpPost]
     public async Task<IActionResult> CreateNoPassword(AppUserRegistrationForm form)
     {
@@ -60,7 +65,9 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
         };
     }
 
+
     [UseAdminApiKey]
+    [SwaggerRequestExample(typeof(AppUserRegistrationForm), typeof(AppUserRegistrationExample))]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, AppUserRegistrationForm form)
     {

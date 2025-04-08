@@ -260,8 +260,8 @@ public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfil
             if (hasProjects)
                 return ServiceResult.Conflict(message: "Can't remove because the user is connected to a project");
 
-            var result = await _appUserRepository.RemoveAsync(appUserEntity);
-            if (!result)
+            var result = await _appUserManager.DeleteAsync(appUserEntity);
+            if (!result.Succeeded)
                 return ServiceResult.Failed();
 
             await _appUserProfileRepository.RemoveAsync(appUserEntity.AppUserProfile!);

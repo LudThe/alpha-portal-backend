@@ -2,10 +2,14 @@
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
+using WebApi.Documentation;
 using WebApi.Extensions.Attributes;
 
 namespace WebApi.Controllers;
 
+[Produces("application/json")]
+[Consumes("application/json")]
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
@@ -29,7 +33,9 @@ public class ClientsController(IClientService clientService) : ControllerBase
         return Ok(client);
     }
 
+
     [UseAdminApiKey]
+    [SwaggerRequestExample(typeof(ClientRegistrationForm), typeof(ClientRegistrationExample))]
     [HttpPost]
     public async Task<IActionResult> Create(ClientRegistrationForm form)
     {
@@ -48,7 +54,9 @@ public class ClientsController(IClientService clientService) : ControllerBase
         };
     }
 
+
     [UseAdminApiKey]
+    [SwaggerRequestExample(typeof(ClientRegistrationForm), typeof(ClientRegistrationExample))]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, ClientRegistrationForm form)
     {

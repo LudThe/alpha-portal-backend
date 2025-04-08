@@ -5,6 +5,8 @@ using WebApi.Extensions.Attributes;
 
 namespace WebApi.Controllers;
 
+[Produces("application/json")]
+[Consumes("application/json")]
 [Authorize]
 [UseAdminApiKey]
 [Route("api/[controller]")]

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using WebApi.Extensions.Middlewares;
 
@@ -56,7 +58,7 @@ builder.Services.AddAuthentication(x =>
             ValidIssuer = issuer,
             ValidateIssuer = true,
             ValidAudience = audience,
-            ValidateAudience = true,
+            ValidateAudience = false,
         };
     });
 
@@ -72,9 +74,83 @@ builder.Services.AddCors(x =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations();
+    options.ExampleFilters();
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v. 1.0",
+        Title = "Alpha API Documentation",
+        Description = "This is the standard documentation for Alpha Portal.",
+    });
+
+
+    var apiKeyScheme = new OpenApiSecurityScheme
+    {
+        Name = "X-API-KEY",
+        Description = "Api-Key Required",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "ApiKeyScheme",
+        Reference = new OpenApiReference
+        {
+            Id = "ApiKey",
+            Type = ReferenceType.SecurityScheme,
+        }
+    };
+    options.AddSecurityDefinition("ApiKey", apiKeyScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { apiKeyScheme, new List<string>() }
+    });
+
+
+    var apiAdminScheme = new OpenApiSecurityScheme
+    {
+        Name = "X-ADM-API-KEY",
+        Description = "Admin Api-Key Required",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "ApiKeyScheme",
+        Reference = new OpenApiReference
+        {
+            Id = "AdminApiKey",
+            Type = ReferenceType.SecurityScheme,
+        }
+    };
+    options.AddSecurityDefinition("AdminApiKey", apiAdminScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { apiAdminScheme, new List<string>() }
+    });
+
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {{  new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },new string[] { }
+            }
+    });
+});
+
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 
 var app = builder.Build();
@@ -83,12 +159,17 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 app.MapOpenApi();
-app.UseSwagger();
-app.UseSwaggerUI(x =>
+
+if (app.Environment.IsDevelopment())
 {
-    x.SwaggerEndpoint("/swagger/v1/swagger.json", "Alpha API");
-    x.RoutePrefix = string.Empty;
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(x =>
+    {
+        x.SwaggerEndpoint("/swagger/v1/swagger.json", "Alpha API");
+        x.RoutePrefix = string.Empty;
+    });
+}
+
 app.UseHttpsRedirection();
 
 app.UseMiddleware<DefaultApiKeyMiddleware>();

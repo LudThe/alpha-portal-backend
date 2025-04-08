@@ -1,15 +1,21 @@
 ﻿using Business.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
+using WebApi.Documentation;
 
 namespace WebApi.Controllers;
 
+[Produces("application/json")]
+[Consumes("application/json")]
 [Route("api/[controller]")]
 [ApiController]
 public class SignUpController(IAppUserService appUserService) : ControllerBase
 {
     private readonly IAppUserService _appUserService = appUserService;
 
+
+    [SwaggerRequestExample(typeof(SignUpForm), typeof(SignUpExample))]
     [HttpPost]
     public async Task<IActionResult> SignUp(SignUpForm form)
     {

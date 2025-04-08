@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
 
+[Produces("application/json")]
+[Consumes("application/json")]
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]

@@ -2,9 +2,13 @@
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
+using WebApi.Documentation;
 
 namespace WebApi.Controllers;
 
+[Produces("application/json")]
+[Consumes("application/json")]
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
@@ -29,7 +33,7 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
         return Ok(project);
     }
 
-
+    [SwaggerRequestExample(typeof(ProjectRegistrationForm), typeof(ProjectRegistrationExample))]
     [HttpPost]
     public async Task<IActionResult> Create(ProjectRegistrationForm form)
     {
@@ -49,6 +53,7 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     }
 
 
+    [SwaggerRequestExample(typeof(ProjectRegistrationForm), typeof(ProjectRegistrationExample))]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, ProjectRegistrationForm form)
     {
