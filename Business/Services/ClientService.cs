@@ -172,4 +172,17 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
             return ServiceResult.Failed(ex.Message);
         }
     }
+
+
+    public async Task<List<ServiceResult>> RemoveMultipleAsync(List<int> ids)
+    {
+        List<ServiceResult> results = [];
+        foreach (int id in ids)
+        {
+            var result = await RemoveAsync(id);
+            results.Add(result);
+        }
+
+        return results;
+    }
 }

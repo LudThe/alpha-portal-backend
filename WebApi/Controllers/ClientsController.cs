@@ -91,4 +91,31 @@ public class ClientsController(IClientService clientService) : ControllerBase
             _ => Problem(),
         };
     }
+
+    [UseAdminApiKey]
+    [HttpDelete("bulk")]
+    public async Task<IActionResult> RemoveMultiple([FromBody] List<int> ids)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var results = await _clientService.RemoveMultipleAsync(ids);
+
+        if (results.All(r => r.StatusCode == 200))
+        {
+            return Ok(results);
+        }
+
+        if (results.Any(r => r.StatusCode == 404))
+        {
+            return NotFound();
+        }
+
+        if (results.Any(r => r.StatusCode == 409))
+        {
+            return Conflict(results);
+        }
+
+        return Problem();
+    }
 }
