@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models;
 
@@ -11,7 +12,7 @@ public class ClientRegistrationForm
     [RegularExpression(@"^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$")]
     public string Email { get; set; } = null!;
     public string? Phone { get; set; }
-    public string? ImageUrl { get; set; }
+    public IFormFile? ImageFile { get; set; }
     public string? Reference { get; set; }
 
     [Required]

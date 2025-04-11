@@ -7,13 +7,12 @@ using Data.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Business.Services;
 
 
 
-public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfileRepository appUserProfileRepository, IAppUserAddressRepository appUserAddressRepository, UserManager<AppUserEntity> appUserManager, SignInManager<AppUserEntity> signInManager, JwtTokenHandler jwtTokenHandler, IMemoryCache cache) : IAppUserService
+public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfileRepository appUserProfileRepository, IAppUserAddressRepository appUserAddressRepository, UserManager<AppUserEntity> appUserManager, SignInManager<AppUserEntity> signInManager, JwtTokenHandler jwtTokenHandler, IMemoryCache cache, IFileHandler fileHandler) : IAppUserService
 {
     private readonly IAppUserRepository _appUserRepository = appUserRepository;
     private readonly IAppUserProfileRepository _appUserProfileRepository = appUserProfileRepository;
@@ -22,7 +21,7 @@ public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfil
     private readonly SignInManager<AppUserEntity> _signInManager = signInManager;
     private readonly JwtTokenHandler _jwtTokenHandler = jwtTokenHandler;
     private readonly IMemoryCache _cache = cache;
-
+    private readonly IFileHandler _fileHandler = fileHandler;
 
     private void ClearCache()
     {
@@ -175,11 +174,18 @@ public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfil
         try
         {
             var appUserEntity = AppUserFactory.Create(form);
+
+            if (form.ImageFile != null)
+            {
+                var imageFileUri = await _fileHandler.UploadFileAsync(form.ImageFile);
+                appUserEntity!.AppUserProfile!.ImageUrl = imageFileUri;
+            }
+
             var result = await _appUserManager.CreateAsync(appUserEntity!);
             if (!result.Succeeded)
                 return ServiceResult.Failed();
 
-            var role = form.AppUserRole.IsNullOrEmpty() ? "User" : form.AppUserRole;
+            var role = string.IsNullOrEmpty(form.AppUserRole) ? "User" : form.AppUserRole;
 
             var roleResult = await _appUserManager.AddToRoleAsync(appUserEntity!, role);
             if (!roleResult.Succeeded)
@@ -211,21 +217,38 @@ public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfil
 
         try
         {
-            var roles = await _appUserManager.GetRolesAsync(appUserEntity);
-            var oldRole = roles[0] ?? "";
+            var oldRole = "";
             var newRole = form.AppUserRole;
+            var roles = await _appUserManager.GetRolesAsync(appUserEntity);
+            if (roles.Count() > 0)
+            {
+                oldRole = roles[0];
+            }
 
             var updatedAppUserEntity = AppUserFactory.Update(appUserEntity, form);
+
+            if (form.ImageFile != null)
+            {
+                if (updatedAppUserEntity!.AppUserProfile!.ImageUrl != null)
+                    await _fileHandler.RemoveFileAsync(updatedAppUserEntity.AppUserProfile!.ImageUrl);
+
+                var imageFileUri = await _fileHandler.UploadFileAsync(form.ImageFile);
+                updatedAppUserEntity.AppUserProfile!.ImageUrl = imageFileUri;
+            }
+
             var result = await _appUserManager.UpdateAsync(updatedAppUserEntity!);
             if (!result.Succeeded)
                 return ServiceResult.Failed();
 
             if (oldRole != newRole)
             {
-                // remove old role
-                var removeRoleResult = await _appUserManager.RemoveFromRoleAsync(appUserEntity!, oldRole);
-                if (!removeRoleResult.Succeeded)
-                    return ServiceResult.Created(message: "Remove old role failed");
+                if (!string.IsNullOrEmpty(oldRole))
+                {
+                    // remove old role
+                    var removeRoleResult = await _appUserManager.RemoveFromRoleAsync(appUserEntity!, oldRole);
+                    if (!removeRoleResult.Succeeded)
+                        return ServiceResult.Created(message: "Remove old role failed");
+                }
 
                 // set new role
                 var addRoleResult = await _appUserManager.AddToRoleAsync(appUserEntity!, newRole);
@@ -248,7 +271,8 @@ public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfil
     {
         var appUserEntity = await _appUserRepository.GetAsync(
                 findBy: x => x.Id == id,
-                i => i.Projects
+                i => i.Projects,
+                i => i.AppUserProfile
             );
 
         if (appUserEntity == null) return ServiceResult.NotFound();
@@ -260,9 +284,14 @@ public class AppUserService(IAppUserRepository appUserRepository, IAppUserProfil
             if (hasProjects)
                 return ServiceResult.Conflict(message: "Can't remove because the user is connected to a project");
 
+            var imgUrl = appUserEntity.AppUserProfile!.ImageUrl;
+
             var result = await _appUserManager.DeleteAsync(appUserEntity);
             if (!result.Succeeded)
                 return ServiceResult.Failed();
+
+            if (imgUrl != null)
+                await _fileHandler.RemoveFileAsync(imgUrl);
 
             await _appUserProfileRepository.RemoveAsync(appUserEntity.AppUserProfile!);
 

@@ -12,7 +12,6 @@ public class AppUserRegistrationExample : IExamplesProvider<AppUserRegistrationF
             FirstName = "John",
             LastName = "Smith",
             JobTitle = "Developer",
-            ImageUrl = "file_name.jpg",
             Email = "john.smith@mail.com",
             Phone = "0701234567",
             StreetAddress = "Example street 3",

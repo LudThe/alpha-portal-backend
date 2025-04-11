@@ -82,7 +82,6 @@ public class AppUserFactory
             LastName = form.LastName,
             JobTitle = form.JobTitle,
             Phone = form.Phone,
-            ImageUrl = form.ImageUrl,
             Created = dateTime,
             Modified = dateTime
         };
@@ -114,7 +113,6 @@ public class AppUserFactory
         appUserEntity!.AppUserProfile!.FirstName = form.FirstName;
         appUserEntity.AppUserProfile.LastName = form.LastName;
         appUserEntity.AppUserProfile.JobTitle = form.JobTitle;
-        appUserEntity.AppUserProfile.ImageUrl = form.ImageUrl;
         appUserEntity.AppUserProfile.Phone = form.Phone;
         appUserEntity.AppUserProfile.Modified = DateTime.UtcNow;
 

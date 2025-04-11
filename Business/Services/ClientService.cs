@@ -1,4 +1,5 @@
 ﻿using Business.Factories;
+using Business.Handlers;
 using Business.Interfaces;
 using Business.Managers;
 using Data.Interfaces;
@@ -7,12 +8,13 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Business.Services;
 
-public class ClientService(IClientRepository clientRepository, IClientInformationRepository clientInformationRepository, IClientAddressRepository clientAddressRepository, IMemoryCache cache) : IClientService
+public class ClientService(IClientRepository clientRepository, IClientInformationRepository clientInformationRepository, IClientAddressRepository clientAddressRepository, IMemoryCache cache, IFileHandler fileHandler) : IClientService
 {
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IClientInformationRepository _clientInformationRepository = clientInformationRepository;
     private readonly IClientAddressRepository _clientAddressRepository = clientAddressRepository;
     private readonly IMemoryCache _cache = cache;
+    private readonly IFileHandler _fileHandler = fileHandler;
 
 
     private void ClearCache()
@@ -85,6 +87,13 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
         try
         {
             var clientEntity = ClientFactory.Create(form);
+
+            if (form.ImageFile != null)
+            {
+                var imageFileUri = await _fileHandler.UploadFileAsync(form.ImageFile);
+                clientEntity!.ImageUrl = imageFileUri;
+            }
+
             var result = await _clientRepository.AddAsync(clientEntity!);
             if (!result)
                 return ServiceResult.Failed();
@@ -120,6 +129,16 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
         try
         {
             var updatedClientEntity = ClientFactory.Update(clientEntity, form);
+
+            if (form.ImageFile != null)
+            {
+                if (clientEntity.ImageUrl != null)
+                    await _fileHandler.RemoveFileAsync(clientEntity.ImageUrl);
+
+                var imageFileUri = await _fileHandler.UploadFileAsync(form.ImageFile);
+                clientEntity!.ImageUrl = imageFileUri;
+            }
+
             var result = await _clientRepository.UpdateAsync(updatedClientEntity!);
             if (!result)
                 return ServiceResult.Failed();
@@ -162,6 +181,9 @@ public class ClientService(IClientRepository clientRepository, IClientInformatio
             await _clientInformationRepository.RemoveAsync(clientEntity.ContactInformation);
 
             await _clientAddressRepository.RemoveAsync(clientEntity.Address);
+
+            if (clientEntity.ImageUrl != null)
+                await _fileHandler.RemoveFileAsync(clientEntity.ImageUrl);
 
             ClearCache();
 

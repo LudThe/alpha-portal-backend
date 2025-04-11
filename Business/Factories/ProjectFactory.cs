@@ -46,7 +46,6 @@ public class ProjectFactory
         {
             ProjectName = form.ProjectName,
             Description = form.Description,
-            ImageUrl = form.ImageUrl,
             Budget = form.Budget,
             StartDate = form.StartDate,
             EndDate = form.EndDate,
@@ -67,7 +66,6 @@ public class ProjectFactory
 
         projectEntity.ProjectName = form.ProjectName;
         projectEntity.Description = form.Description;
-        projectEntity.ImageUrl = form.ImageUrl;
         projectEntity.Budget = form.Budget;
 
         projectEntity.StartDate = form.StartDate;

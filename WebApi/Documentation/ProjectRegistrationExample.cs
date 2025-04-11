@@ -11,7 +11,6 @@ public class ProjectRegistrationExample : IExamplesProvider<ProjectRegistrationF
         {
             ProjectName = "Example name",
             Description = "Example description",
-            ImageUrl = "file_name.jpg",
             Budget = 1200,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now,

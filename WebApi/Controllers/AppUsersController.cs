@@ -9,8 +9,7 @@ using WebApi.Extensions.Attributes;
 
 namespace WebApi.Controllers;
 
-[Produces("application/json")]
-[Consumes("application/json")]
+
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
@@ -19,6 +18,8 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
     private readonly IAppUserService _appUserService = appUserService;
 
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -27,6 +28,8 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
     }
 
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id)
     {
@@ -36,6 +39,8 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
     }
 
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [HttpGet("signedInInfo"), Authorize]
     public async Task<IActionResult> GetByJwtToken()
     {
@@ -45,6 +50,9 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
         return Ok(appUser);
     }
 
+
+    [Produces("application/json")]
+    [Consumes("multipart/form-data")]
     [UseAdminApiKey]
     [SwaggerRequestExample(typeof(AppUserRegistrationForm), typeof(AppUserRegistrationExample))]
     [HttpPost]
@@ -66,6 +74,8 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
     }
 
 
+    [Produces("application/json")]
+    [Consumes("multipart/form-data")]
     [UseAdminApiKey]
     [SwaggerRequestExample(typeof(AppUserRegistrationForm), typeof(AppUserRegistrationExample))]
     [HttpPut("{id}")]
@@ -85,6 +95,8 @@ public class AppUsersController(IAppUserService appUserService) : ControllerBase
         };
     }
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [UseAdminApiKey]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Remove(string id)

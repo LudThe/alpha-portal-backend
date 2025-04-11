@@ -1,4 +1,5 @@
 ﻿using Business.Factories;
+using Business.Handlers;
 using Business.Interfaces;
 using Business.Managers;
 using Data.Interfaces;
@@ -7,12 +8,12 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Business.Services;
 
-public class ProjectService(IProjectRepository projectRepository, IProjectStatusService projectStatusService, IMemoryCache cache) : IProjectService
+public class ProjectService(IProjectRepository projectRepository, IProjectStatusService projectStatusService, IMemoryCache cache, IFileHandler fileHandler) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly IProjectStatusService _projectStatusService = projectStatusService;
     private readonly IMemoryCache _cache = cache;
-
+    private readonly IFileHandler _fileHandler = fileHandler;
 
     private void ClearCache()
     {
@@ -94,6 +95,12 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
         {
             var projectEntity = ProjectFactory.Create(form);
 
+            if (form.ImageFile != null)
+            {
+                var imageFileUri = await _fileHandler.UploadFileAsync(form.ImageFile);
+                projectEntity!.ImageUrl = imageFileUri;
+            }
+
             var projectStatus = _projectStatusService.GetByStatusNameAsync("Active");
             if (projectStatus.Result != null && projectStatus.Result.Id != 0)
                 projectEntity!.ProjectStatusId = projectStatus.Result.Id;
@@ -133,6 +140,16 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
         try
         {
             var updatedProjectEntity = ProjectFactory.Update(projectEntity, form);
+
+            if (form.ImageFile != null)
+            {
+                if (updatedProjectEntity?.ImageUrl != null)
+                    await _fileHandler.RemoveFileAsync(updatedProjectEntity.ImageUrl);
+
+                var imageFileUri = await _fileHandler.UploadFileAsync(form.ImageFile);
+                updatedProjectEntity!.ImageUrl = imageFileUri;
+            }
+
             var result = await _projectRepository.UpdateAsync(updatedProjectEntity!);
             if (!result)
                 return ServiceResult.Failed();
@@ -159,6 +176,9 @@ public class ProjectService(IProjectRepository projectRepository, IProjectStatus
             var result = await _projectRepository.RemoveAsync(projectEntity);
             if (!result)
                 return ServiceResult.Failed();
+
+            if (projectEntity.ImageUrl != null)
+                await _fileHandler.RemoveFileAsync(projectEntity.ImageUrl);
 
             ClearCache();
 

@@ -8,8 +8,7 @@ using WebApi.Extensions.Attributes;
 
 namespace WebApi.Controllers;
 
-[Produces("application/json")]
-[Consumes("application/json")]
+
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
@@ -17,6 +16,8 @@ public class ClientsController(IClientService clientService) : ControllerBase
 {
     private readonly IClientService _clientService = clientService;
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -24,7 +25,8 @@ public class ClientsController(IClientService clientService) : ControllerBase
         return Ok(clients);
     }
 
-
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -33,7 +35,8 @@ public class ClientsController(IClientService clientService) : ControllerBase
         return Ok(client);
     }
 
-
+    [Produces("application/json")]
+    [Consumes("multipart/form-data")]
     [UseAdminApiKey]
     [SwaggerRequestExample(typeof(ClientRegistrationForm), typeof(ClientRegistrationExample))]
     [HttpPost]
@@ -54,7 +57,8 @@ public class ClientsController(IClientService clientService) : ControllerBase
         };
     }
 
-
+    [Produces("application/json")]
+    [Consumes("multipart/form-data")]
     [UseAdminApiKey]
     [SwaggerRequestExample(typeof(ClientRegistrationForm), typeof(ClientRegistrationExample))]
     [HttpPut("{id}")]
@@ -74,6 +78,8 @@ public class ClientsController(IClientService clientService) : ControllerBase
         };
     }
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [UseAdminApiKey]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Remove(int id)
@@ -92,6 +98,8 @@ public class ClientsController(IClientService clientService) : ControllerBase
         };
     }
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [UseAdminApiKey]
     [HttpDelete("bulk")]
     public async Task<IActionResult> RemoveMultiple([FromBody] List<int> ids)

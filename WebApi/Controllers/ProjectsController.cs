@@ -7,8 +7,7 @@ using WebApi.Documentation;
 
 namespace WebApi.Controllers;
 
-[Produces("application/json")]
-[Consumes("application/json")]
+
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
@@ -17,6 +16,8 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     private readonly IProjectService _projectService = projectService;
 
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -25,6 +26,8 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     }
 
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -33,6 +36,9 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
         return Ok(project);
     }
 
+
+    [Produces("application/json")]
+    [Consumes("multipart/form-data")]
     [SwaggerRequestExample(typeof(ProjectRegistrationForm), typeof(ProjectRegistrationExample))]
     [HttpPost]
     public async Task<IActionResult> Create(ProjectRegistrationForm form)
@@ -53,6 +59,8 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     }
 
 
+    [Produces("application/json")]
+    [Consumes("multipart/form-data")]
     [SwaggerRequestExample(typeof(ProjectRegistrationForm), typeof(ProjectRegistrationExample))]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, ProjectRegistrationForm form)
@@ -72,6 +80,8 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     }
 
 
+    [Produces("application/json")]
+    [Consumes("application/json")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Remove(int id)
     {

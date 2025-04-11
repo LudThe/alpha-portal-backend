@@ -12,7 +12,6 @@ public class ClientRegistrationExample : IExamplesProvider<ClientRegistrationFor
             ClientName = "John Smith",
             Email = "john.smith@mail.com",
             Phone = "0701234567",
-            ImageUrl = "file_name.jpg",
             Reference = "Reference name",
             StreetAddress = "Example street 3",
             PostalCode = "15320",

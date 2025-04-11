@@ -34,6 +34,8 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IProjectStatusService, ProjectStatusService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 
+builder.Services.AddScoped<IFileHandler>(_ => new AzureFileHandler(builder.Configuration.GetConnectionString("AzureBlobStorage")!, "media"));
+
 builder.Services.AddTransient<JwtTokenHandler>();
 builder.Services.AddAuthentication(x =>
 {

@@ -3,7 +3,7 @@ using Domain.Models;
 
 namespace Business.Factories;
 
-public class ClientFactory
+public class ClientFactory()
 {
     public static Client? Map(ClientEntity entity)
     {
@@ -66,7 +66,6 @@ public class ClientFactory
             Modified = dateTime,
             IsActive = true,
             ContactInformation = contact,
-            ImageUrl = form.ImageUrl,
             Address = address,
         };
 
@@ -80,7 +79,6 @@ public class ClientFactory
 
         clientEntity.ClientName = form.ClientName;
         clientEntity.Modified = DateTime.UtcNow;
-        clientEntity.ImageUrl = form.ImageUrl;
 
         clientEntity.ContactInformation.Email = form.Email;
         clientEntity.ContactInformation.Phone = form.Phone;

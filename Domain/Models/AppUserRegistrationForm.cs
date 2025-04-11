@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models;
 
@@ -10,7 +11,7 @@ public class AppUserRegistrationForm
     [Required]
     public string LastName { get; set; } = null!;
     public string? JobTitle { get; set; }
-    public string? ImageUrl { get; set; }
+    public IFormFile? ImageFile { get; set; }
 
     [Required]
     [RegularExpression(@"^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$")]
